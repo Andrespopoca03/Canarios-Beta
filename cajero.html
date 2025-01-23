@@ -281,13 +281,24 @@
         // Intentar seleccionar la cámara principal
         let selectedDeviceId = null;
 
-        // Priorizar dispositivos con 'back' en el label
-        const backCameras = videoDevices.filter(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear'));
+        // Priorizar dispositivos con 'back' o 'rear' en el label, excluyendo 'wide' y 'ultra'
+        const backCameras = videoDevices.filter(device => {
+          const label = device.label.toLowerCase();
+          return (label.includes('back') || label.includes('rear')) &&
+                 !(label.includes('wide') || label.includes('ultra'));
+        });
+
         if (backCameras.length > 0) {
           selectedDeviceId = backCameras[0].deviceId;
         } else {
-          // Si no se encuentra, seleccionar el primer dispositivo de video
-          selectedDeviceId = videoDevices[0].deviceId;
+          // Si no se encuentra, seleccionar el primer dispositivo de video trasero disponible
+          const allBackCameras = videoDevices.filter(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear'));
+          if (allBackCameras.length > 0) {
+            selectedDeviceId = allBackCameras[0].deviceId;
+          } else if (videoDevices.length > 0) {
+            // Si no hay cámaras traseras, seleccionar cualquier cámara de video disponible
+            selectedDeviceId = videoDevices[0].deviceId;
+          }
         }
 
         if (!selectedDeviceId) {
