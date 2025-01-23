@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cajero - Los Canarios</title>
 
-  <!-- Google Fonts y estilos base similares al index -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
 
+  <!-- Estilos: CSS ajustado para móviles con media queries -->
   <style>
     :root {
       --color-morado-oscuro: #4f46e5;
@@ -20,11 +21,13 @@
       --color-sombra: rgba(0,0,0,0.1);
       --transition-rapida: 0.3s ease-in-out;
     }
+
     * {
       margin: 0; 
       padding: 0; 
       box-sizing: border-box;
     }
+
     body {
       font-family: 'Poppins', sans-serif;
       background-color: var(--color-gris-fondo);
@@ -33,7 +36,10 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      -webkit-text-size-adjust: 100%; /* Evita zoom no deseado en móviles */
     }
+
+    /* ENCABEZADO */
     header {
       background: linear-gradient(to right, var(--color-morado-oscuro), var(--color-morado-principal));
       color: var(--color-blanco);
@@ -41,17 +47,22 @@
       box-shadow: 0 2px 6px var(--color-sombra);
       text-align: center;
     }
+
     header h1 {
       font-weight: 700;
       font-size: 1.5rem;
       letter-spacing: 1px;
     }
+
+    /* CONTENEDOR PRINCIPAL */
     .container {
       max-width: 1200px;
       margin: 2rem auto;
       padding: 0 1rem;
       flex: 1;
     }
+
+    /* TARJETAS */
     .card {
       background: var(--color-blanco);
       border-radius: 0.75rem;
@@ -60,37 +71,44 @@
       margin-bottom: 2rem;
       transition: transform var(--transition-rapida), box-shadow var(--transition-rapida);
     }
+
     .card:hover {
       transform: translateY(-4px);
       box-shadow: 0 8px 20px var(--color-sombra);
     }
+
     .card h2 {
       color: var(--color-morado-principal);
       margin-bottom: 1rem;
-      font-size: 1.25rem;
     }
+
+    /* FORMULARIOS */
     .form-group {
       margin-bottom: 1rem;
       display: flex;
       flex-direction: column;
     }
+
     .form-group label {
       margin-bottom: 0.3rem;
       font-weight: 500;
       color: var(--color-morado-oscuro);
     }
-    .form-group input, .form-group select {
+
+    .form-group input {
       padding: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 0.3rem;
       font-size: 1rem;
       outline: none;
       transition: border-color var(--transition-rapida);
-      width: 100%;
     }
-    .form-group input:focus, .form-group select:focus {
+
+    .form-group input:focus {
       border-color: var(--color-morado-principal);
     }
+
+    /* BOTONES */
     .btn {
       background-color: var(--color-morado-principal);
       color: var(--color-blanco);
@@ -101,52 +119,61 @@
       border: none;
       cursor: pointer;
       margin-top: 0.5rem;
-      width: 100%;
+      font-size: 1rem;
     }
+
     .btn:hover {
       background-color: var(--color-morado-claro);
     }
+
+    /* TABLAS */
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 1rem;
     }
+
     table thead {
       background-color: var(--color-morado-principal);
       color: var(--color-blanco);
     }
+
     table th, table td {
       padding: 0.75rem;
       text-align: left;
       border-bottom: 1px solid #ddd;
-      font-size: 0.9rem;
     }
+
     table th {
       font-weight: 600;
     }
+
+    /* TOTAL */
     .total {
       text-align: right;
       margin-top: 1rem;
       font-weight: 700;
       color: var(--color-morado-principal);
-      font-size: 1rem;
     }
+
+    /* PIE DE PÁGINA */
     footer {
       background: linear-gradient(to right, var(--color-morado-oscuro), var(--color-morado-principal));
       color: var(--color-blanco);
       text-align: center;
       padding: 1rem;
       box-shadow: 0 -2px 6px var(--color-sombra);
-      font-size: 0.9rem;
     }
+
+    /* LINK REGRESAR */
     .back-link {
       display: inline-block;
       margin-top: 1rem;
       text-decoration: underline;
       color: var(--color-morado-principal);
-      font-size: 0.9rem;
     }
-    /* Contenedor del escáner */
+
+    /* CONTENEDOR ESCÁNER */
     #interactive {
       width: 100%;
       max-width: 600px;
@@ -155,12 +182,13 @@
       border: 2px solid var(--color-morado-principal);
       border-radius: 0.5rem;
       overflow: hidden;
-      display: none; /* Asegurarse de que esté oculto inicialmente */
+      display: none; /* Oculto inicialmente */
     }
+
     #interactive video {
       width: 100%;
-      height: auto;
     }
+
     #cam-indicator {
       text-align: center;
       margin-top: 0.5rem;
@@ -168,41 +196,58 @@
       color: var(--color-morado-oscuro);
       font-weight: 500;
     }
-    /* Indicador de éxito al agregar producto */
+
+    /* MENSAJE DE ÉXITO */
     #success-message {
       display: none;
       color: green;
       margin-top: 0.5rem;
       font-weight: 500;
-      font-size: 0.9rem;
     }
-    /* Responsividad */
-    @media (max-width: 768px) {
-      .card {
-        padding: 1rem;
-      }
-      .btn {
-        padding: 0.6rem 1rem;
-      }
-      table th, table td {
-        padding: 0.5rem;
-        font-size: 0.8rem;
-      }
-      .total {
-        font-size: 0.9rem;
-      }
+
+    /* =====================  ESTILOS RESPONSIVE PARA MÓVILES  ===================== */
+    @media (max-width: 600px) {
       header h1 {
         font-size: 1.2rem;
       }
-      footer p {
-        font-size: 0.8rem;
+
+      .container {
+        margin: 1rem auto;  /* Reducimos márgenes en móvil */
+        padding: 0 1rem; 
       }
-      .back-link {
-        font-size: 0.8rem;
+
+      .card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .card h2 {
+        margin-bottom: 0.75rem;
+        font-size: 1.2rem;
+      }
+
+      table th, table td {
+        font-size: 0.9rem; /* Letra un poco más pequeña en tabla para pantallas reducidas */
+      }
+
+      .btn {
+        width: 100%;  /* El botón ocupa todo el ancho en móvil */
+        margin-top: 0.75rem;
+        font-size: 1rem;
+      }
+
+      #tabla-productos {
+        overflow-x: auto; /* Scroll horizontal si fuera necesario */
+      }
+
+      .total {
+        font-size: 1.1rem;
+        margin-top: 0.75rem;
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- ENCABEZADO -->
@@ -215,14 +260,6 @@
     <!-- Sección para escanear con la cámara -->
     <div class="card">
       <h2>Escáner de Código de Barras</h2>
-      <!-- Selección de Cámara -->
-      <div class="form-group">
-        <label for="select-camera">Selecciona la Cámara:</label>
-        <select id="select-camera">
-          <option value="">--Selecciona una cámara--</option>
-          <!-- Las opciones se agregarán dinámicamente -->
-        </select>
-      </div>
       <button class="btn" id="btn-toggle-scan">Iniciar Escáner</button>
       <div id="cam-indicator"></div>
       <div id="interactive"></div>
@@ -250,7 +287,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Productos se irán agregando dinámicamente aquí -->
+          <!-- Productos se agregarán aquí dinámicamente -->
         </tbody>
       </table>
 
@@ -267,28 +304,27 @@
     <p>Demostración de Cajero - Los Canarios &copy; 2025</p>
   </footer>
 
-  <!-- 1) PRIMERO: Librería QuaggaJS (CDN) SIN atributo integrity -->
+  <!-- Librería QuaggaJS (CDN) SIN atributo integrity -->
   <script 
     src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"
     crossorigin="anonymous"
     referrerpolicy="no-referrer">
   </script>
 
-  <!-- 2) DESPUÉS: Tu script principal -->
+  <!-- Script principal para escanear y manejar la venta -->
   <script>
     // ---------- SIMULACIÓN DE BASE DE DATOS ----------
     const productosDB = [
-      { codigo: "12345", nombre: "Manzana", precio: 10.00 },
-      { codigo: "67890", nombre: "Cereal", precio: 25.50 },
-      { codigo: "11121", nombre: "Leche",   precio: 18.00 },
+      { codigo: "12345", nombre: "Manzana",  precio: 10.00 },
+      { codigo: "67890", nombre: "Cereal",   precio: 25.50 },
+      { codigo: "11121", nombre: "Leche",    precio: 18.00 },
       { codigo: "55555", nombre: "Galletas", precio: 15.25 }
-      // Agrega más productos si deseas
+      // Agrega más productos si lo deseas
     ];
 
     // ---------- VARIABLES GLOBALES ----------
     let total = 0;
     let scanning = false;
-    let currentStream = null;
 
     // ---------- REFERENCIAS A ELEMENTOS ----------
     const btnToggleScan = document.getElementById("btn-toggle-scan");
@@ -300,126 +336,125 @@
     const totalPagar = document.getElementById("total-pagar");
     const btnCobrar = document.getElementById("btn-cobrar");
     const successMessage = document.getElementById("success-message");
-    const selectCamera = document.getElementById("select-camera");
 
-    // ---------- FUNCIONES PRINCIPALES ----------
-
-    // Función para enumerar cámaras y poblar el dropdown
-    async function listarCamaras() {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(device => device.kind === 'videoinput');
-
-        // Limpiar opciones actuales
-        selectCamera.innerHTML = '<option value="">--Selecciona una cámara--</option>';
-
-        // Filtrar cámaras traseras y priorizar la principal
-        const rearCameras = videoDevices.filter(device => {
-          const label = device.label.toLowerCase();
-          return (label.includes('back') || label.includes('rear')) &&
-                 !(label.includes('wide') || label.includes('ultra'));
-        });
-
-        // Si no se encuentran cámaras traseras sin "wide" o "ultra", listar todas
-        const camerasToList = rearCameras.length > 0 ? rearCameras : videoDevices;
-
-        camerasToList.forEach(device => {
-          const option = document.createElement("option");
-          option.value = device.deviceId;
-          option.text = device.label || `Cámara ${selectCamera.length}`;
-          selectCamera.appendChild(option);
-        });
-
-        // Si solo hay una cámara, seleccionarla automáticamente
-        if (camerasToList.length === 1) {
-          selectCamera.selectedIndex = 1;
-        }
-
-      } catch (err) {
-        console.error("Error al enumerar cámaras: ", err);
-        camIndicator.textContent = "No se pudo enumerar las cámaras.";
-      }
-    }
-
-    // Inicializar la lista de cámaras al cargar la página
-    window.addEventListener("load", listarCamaras);
-
-    // Evento para cambiar la cámara seleccionada
-    selectCamera.addEventListener("change", () => {
-      if (scanning) {
-        detenerEscaneo();
+    // ---------- EVENTOS ----------
+    btnToggleScan.addEventListener("click", () => {
+      if (!scanning) {
         iniciarEscaneo();
+      } else {
+        detenerEscaneo();
       }
     });
 
-    // Función para iniciar el escaneo
-    async function iniciarEscaneo() {
-      const selectedDeviceId = selectCamera.value;
-      if (!selectedDeviceId) {
-        alert("Por favor, selecciona una cámara antes de iniciar el escáner.");
+    btnAgregar.addEventListener("click", agregarProducto);
+
+    btnCobrar.addEventListener("click", () => {
+      if (total === 0) {
+        alert("No hay productos para cobrar.");
         return;
       }
+      alert(`Cobro exitoso. Total pagado: $${total.toFixed(2)}`);
+      // Limpiar venta
+      tablaProductos.innerHTML = "";
+      total = 0;
+      totalPagar.textContent = "Total: $0.00";
+    });
 
+    // Al presionar Enter en el input, se agrega el producto
+    barcodeInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        agregarProducto();
+      }
+    });
+
+    // ---------- FUNCIONES PARA ESCANEAR ----------
+    async function iniciarEscaneo() {
       try {
-        camIndicator.textContent = "Iniciando cámara...";
-        // Iniciar QuaggaJS con la cámara seleccionada
-        Quagga.init(
-          {
-            inputStream: {
-              name: "Live",
-              type: "LiveStream",
-              target: interactive, // nuestro contenedor
-              constraints: {
-                deviceId: { exact: selectedDeviceId },
-                facingMode: "environment"
-              }
-            },
-            decoder: {
-              readers: ["code_128_reader", "ean_reader", "code_39_reader", "upc_reader"]
+        camIndicator.textContent = "Solicitando acceso a la cámara...";
+        // Solicitar acceso para enumerar dispositivos
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        
+        // Listar dispositivos de video
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+        // Intentar encontrar una cámara trasera "principal"
+        let selectedDeviceId = null;
+        const backCameras = videoDevices.filter(d => 
+          d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('rear')
+        );
+        if (backCameras.length > 0) {
+          selectedDeviceId = backCameras[0].deviceId;
+        } else {
+          // Si no se encontró "back" o "rear", usamos el primero que hallemos
+          selectedDeviceId = videoDevices[0]?.deviceId;
+        }
+
+        if (!selectedDeviceId) {
+          throw new Error("No se encontró ninguna cámara trasera disponible.");
+        }
+
+        // Detener el stream inicial (solo se usó para permisos y enumeración)
+        stream.getTracks().forEach(track => track.stop());
+
+        // Iniciar Quagga con la cámara seleccionada
+        iniciarQuagga(selectedDeviceId);
+      } catch (err) {
+        alert("No se pudo acceder a la cámara. Error: " + err.name + " - " + err.message);
+        camIndicator.textContent = "Acceso denegado o no disponible";
+      }
+    }
+
+    function iniciarQuagga(deviceId) {
+      scanning = true;
+      btnToggleScan.textContent = "Detener Escáner";
+      interactive.style.display = "block";
+      camIndicator.textContent = "Iniciando cámara...";
+
+      Quagga.init(
+        {
+          inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: interactive,
+            constraints: {
+              deviceId: { exact: deviceId },
+              facingMode: "environment"
             }
           },
-          function(err) {
-            if (err) {
-              console.error(err);
-              alert("Error al iniciar el escáner: " + err);
-              detenerEscaneo();
-              return;
-            }
-            Quagga.start();
-            camIndicator.textContent = "Escaneando... Apunta la cámara al código de barras.";
-            console.log("Quagga inicializado correctamente");
+          decoder: {
+            readers: ["code_128_reader", "ean_reader", "code_39_reader", "upc_reader"]
           }
-        );
+        },
+        function(err) {
+          if (err) {
+            console.error(err);
+            alert("Error al iniciar el escáner: " + err);
+            detenerEscaneo();
+            return;
+          }
+          Quagga.start();
+          camIndicator.textContent = "Escaneando... Apunta la cámara al código de barras.";
+          console.log("Quagga inicializado correctamente");
+        }
+      );
 
-        // Evento: código detectado
-        Quagga.onDetected(onBarcodeDetected);
-        scanning = true;
-        btnToggleScan.textContent = "Detener Escáner";
-        interactive.style.display = "block";
-      } catch (err) {
-        console.error("Error al iniciar el escáner: ", err);
-        camIndicator.textContent = "Error al iniciar el escáner.";
-      }
+      Quagga.onDetected(onBarcodeDetected);
     }
 
-    // Función para detener el escaneo
     function detenerEscaneo() {
-      if (scanning) {
-        Quagga.stop(); // detener escaneo
-        Quagga.offDetected(onBarcodeDetected); // quitar el evento
-        scanning = false;
-        btnToggleScan.textContent = "Iniciar Escáner";
-        interactive.style.display = "none";
-        camIndicator.textContent = "";
-      }
+      scanning = false;
+      btnToggleScan.textContent = "Iniciar Escáner";
+      interactive.style.display = "none";
+      camIndicator.textContent = "";
+      Quagga.stop();
+      Quagga.offDetected(onBarcodeDetected);
     }
 
-    // Función para manejar la detección de códigos de barras
     function onBarcodeDetected(data) {
-      const code = data.codeResult.code;
-      console.log("Código detectado: ", code);
-
-      // Rellenar input con el código detectado
+      const code = data.codeResult.code || "";
+      console.log("Código detectado:", code);
       barcodeInput.value = code;
 
       // Mostrar mensaje de éxito
@@ -428,11 +463,11 @@
         successMessage.style.display = "none";
       }, 2000);
 
-      // Detener el escáner para evitar múltiples detecciones
+      // Para evitar detecciones múltiples seguidas, detenemos el escáner
       detenerEscaneo();
     }
 
-    // Función para agregar producto a la tabla
+    // ---------- AGREGAR PRODUCTO A LA TABLA ----------
     function agregarProducto() {
       const codigoIngresado = barcodeInput.value.trim();
       if (!codigoIngresado) return;
@@ -457,7 +492,7 @@
       });
 
       if (filaExistente) {
-        // Incrementar la cantidad y subtotal
+        // Incrementar la cantidad
         let cantidad = parseInt(filaExistente.querySelector("td:nth-child(3)").textContent);
         cantidad += 1;
         filaExistente.querySelector("td:nth-child(3)").textContent = cantidad;
@@ -465,9 +500,12 @@
         const precio = parseFloat(filaExistente.querySelector("td:nth-child(4)").textContent.replace('$', ''));
         const nuevoSubtotal = precio * cantidad;
         filaExistente.querySelector("td:nth-child(5)").textContent = `$${nuevoSubtotal.toFixed(2)}`;
+
+        // Actualizar total global
+        total += precio;
       } else {
-        // Agregar a la tabla
-        const cantidad = 1; // Se podría pedir al cajero ingresar cantidad
+        // Agregar nueva fila
+        const cantidad = 1;
         const subtotal = productoEncontrado.precio * cantidad;
 
         const fila = document.createElement("tr");
@@ -479,49 +517,15 @@
           <td>$${subtotal.toFixed(2)}</td>
         `;
         tablaProductos.appendChild(fila);
+
+        // Sumar al total global
+        total += subtotal;
       }
 
-      // Actualizar total
-      total += productoEncontrado.precio;
       totalPagar.textContent = `Total: $${total.toFixed(2)}`;
-
-      // Limpiar el campo de código
       barcodeInput.value = "";
       barcodeInput.focus();
     }
-
-    // Función para manejar el cobro
-    function manejarCobro() {
-      if (total === 0) {
-        alert("No hay productos para cobrar.");
-        return;
-      }
-      alert(`Cobro exitoso. Total pagado: $${total.toFixed(2)}`);
-      // Limpiar venta
-      tablaProductos.innerHTML = "";
-      total = 0;
-      totalPagar.textContent = "Total: $0.00";
-    }
-
-    // ---------- EVENTOS ----------
-    btnToggleScan.addEventListener("click", () => {
-      if (!scanning) {
-        iniciarEscaneo();
-      } else {
-        detenerEscaneo();
-      }
-    });
-
-    btnAgregar.addEventListener("click", agregarProducto);
-    btnCobrar.addEventListener("click", manejarCobro);
-
-    // Presionar Enter también agrega el producto
-    barcodeInput.addEventListener("keypress", e => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        agregarProducto();
-      }
-    });
   </script>
 </body>
 </html>
