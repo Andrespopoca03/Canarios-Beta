@@ -39,6 +39,7 @@
       color: var(--color-blanco);
       padding: 1rem;
       box-shadow: 0 2px 6px var(--color-sombra);
+      text-align: center;
     }
     header h1 {
       font-weight: 700;
@@ -66,6 +67,7 @@
     .card h2 {
       color: var(--color-morado-principal);
       margin-bottom: 1rem;
+      font-size: 1.25rem;
     }
     .form-group {
       margin-bottom: 1rem;
@@ -77,15 +79,16 @@
       font-weight: 500;
       color: var(--color-morado-oscuro);
     }
-    .form-group input {
+    .form-group input, .form-group select {
       padding: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 0.3rem;
       font-size: 1rem;
       outline: none;
       transition: border-color var(--transition-rapida);
+      width: 100%;
     }
-    .form-group input:focus {
+    .form-group input:focus, .form-group select:focus {
       border-color: var(--color-morado-principal);
     }
     .btn {
@@ -98,6 +101,7 @@
       border: none;
       cursor: pointer;
       margin-top: 0.5rem;
+      width: 100%;
     }
     .btn:hover {
       background-color: var(--color-morado-claro);
@@ -115,6 +119,7 @@
       padding: 0.75rem;
       text-align: left;
       border-bottom: 1px solid #ddd;
+      font-size: 0.9rem;
     }
     table th {
       font-weight: 600;
@@ -124,6 +129,7 @@
       margin-top: 1rem;
       font-weight: 700;
       color: var(--color-morado-principal);
+      font-size: 1rem;
     }
     footer {
       background: linear-gradient(to right, var(--color-morado-oscuro), var(--color-morado-principal));
@@ -131,12 +137,14 @@
       text-align: center;
       padding: 1rem;
       box-shadow: 0 -2px 6px var(--color-sombra);
+      font-size: 0.9rem;
     }
     .back-link {
       display: inline-block;
       margin-top: 1rem;
       text-decoration: underline;
       color: var(--color-morado-principal);
+      font-size: 0.9rem;
     }
     /* Contenedor del escáner */
     #interactive {
@@ -151,6 +159,7 @@
     }
     #interactive video {
       width: 100%;
+      height: auto;
     }
     #cam-indicator {
       text-align: center;
@@ -165,6 +174,32 @@
       color: green;
       margin-top: 0.5rem;
       font-weight: 500;
+      font-size: 0.9rem;
+    }
+    /* Responsividad */
+    @media (max-width: 768px) {
+      .card {
+        padding: 1rem;
+      }
+      .btn {
+        padding: 0.6rem 1rem;
+      }
+      table th, table td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+      }
+      .total {
+        font-size: 0.9rem;
+      }
+      header h1 {
+        font-size: 1.2rem;
+      }
+      footer p {
+        font-size: 0.8rem;
+      }
+      .back-link {
+        font-size: 0.8rem;
+      }
     }
   </style>
 </head>
@@ -180,6 +215,14 @@
     <!-- Sección para escanear con la cámara -->
     <div class="card">
       <h2>Escáner de Código de Barras</h2>
+      <!-- Selección de Cámara -->
+      <div class="form-group">
+        <label for="select-camera">Selecciona la Cámara:</label>
+        <select id="select-camera">
+          <option value="">--Selecciona una cámara--</option>
+          <!-- Las opciones se agregarán dinámicamente -->
+        </select>
+      </div>
       <button class="btn" id="btn-toggle-scan">Iniciar Escáner</button>
       <div id="cam-indicator"></div>
       <div id="interactive"></div>
@@ -245,6 +288,7 @@
     // ---------- VARIABLES GLOBALES ----------
     let total = 0;
     let scanning = false;
+    let currentStream = null;
 
     // ---------- REFERENCIAS A ELEMENTOS ----------
     const btnToggleScan = document.getElementById("btn-toggle-scan");
@@ -256,122 +300,121 @@
     const totalPagar = document.getElementById("total-pagar");
     const btnCobrar = document.getElementById("btn-cobrar");
     const successMessage = document.getElementById("success-message");
+    const selectCamera = document.getElementById("select-camera");
 
-    // ---------- FUNCIÓN PARA INICIAR O DETENER ESCANEO ----------
-    btnToggleScan.addEventListener("click", () => {
-      if (!scanning) {
-        iniciarEscaneo();
-      } else {
-        detenerEscaneo();
-      }
-    });
+    // ---------- FUNCIONES PRINCIPALES ----------
 
-    /**
-     * Inicia el proceso de escaneo seleccionando la cámara principal.
-     */
-    async function iniciarEscaneo() {
+    // Función para enumerar cámaras y poblar el dropdown
+    async function listarCamaras() {
       try {
-        camIndicator.textContent = "Solicitando acceso a la cámara...";
-        // Solicitar acceso a la cámara para poder enumerar dispositivos
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        // Enumerar dispositivos de video
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-        // Intentar seleccionar la cámara principal
-        let selectedDeviceId = null;
+        // Limpiar opciones actuales
+        selectCamera.innerHTML = '<option value="">--Selecciona una cámara--</option>';
 
-        // Priorizar dispositivos con 'back' o 'rear' en el label, excluyendo 'wide' y 'ultra'
-        const backCameras = videoDevices.filter(device => {
+        // Filtrar cámaras traseras y priorizar la principal
+        const rearCameras = videoDevices.filter(device => {
           const label = device.label.toLowerCase();
           return (label.includes('back') || label.includes('rear')) &&
                  !(label.includes('wide') || label.includes('ultra'));
         });
 
-        if (backCameras.length > 0) {
-          selectedDeviceId = backCameras[0].deviceId;
-        } else {
-          // Si no se encuentra, seleccionar el primer dispositivo de video trasero disponible
-          const allBackCameras = videoDevices.filter(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear'));
-          if (allBackCameras.length > 0) {
-            selectedDeviceId = allBackCameras[0].deviceId;
-          } else if (videoDevices.length > 0) {
-            // Si no hay cámaras traseras, seleccionar cualquier cámara de video disponible
-            selectedDeviceId = videoDevices[0].deviceId;
-          }
+        // Si no se encuentran cámaras traseras sin "wide" o "ultra", listar todas
+        const camerasToList = rearCameras.length > 0 ? rearCameras : videoDevices;
+
+        camerasToList.forEach(device => {
+          const option = document.createElement("option");
+          option.value = device.deviceId;
+          option.text = device.label || `Cámara ${selectCamera.length}`;
+          selectCamera.appendChild(option);
+        });
+
+        // Si solo hay una cámara, seleccionarla automáticamente
+        if (camerasToList.length === 1) {
+          selectCamera.selectedIndex = 1;
         }
 
-        if (!selectedDeviceId) {
-          throw new Error("No se encontró una cámara adecuada.");
-        }
-
-        // Detener el stream inicial ya que no lo usaremos directamente
-        stream.getTracks().forEach(track => track.stop());
-
-        // Iniciar QuaggaJS con la cámara seleccionada
-        iniciarQuagga(selectedDeviceId);
       } catch (err) {
-        alert("No se pudo acceder a la cámara. Error: " + err.name + " - " + err.message);
-        camIndicator.textContent = "Acceso denegado o no disponible";
+        console.error("Error al enumerar cámaras: ", err);
+        camIndicator.textContent = "No se pudo enumerar las cámaras.";
       }
     }
 
-    /**
-     * Inicializa QuaggaJS con la cámara específica.
-     * @param {string} deviceId - ID del dispositivo de video seleccionado.
-     */
-    function iniciarQuagga(deviceId) {
-      scanning = true;
-      btnToggleScan.textContent = "Detener Escáner";
-      interactive.style.display = "block";
-      camIndicator.textContent = "Iniciando cámara...";
+    // Inicializar la lista de cámaras al cargar la página
+    window.addEventListener("load", listarCamaras);
 
-      Quagga.init(
-        {
-          inputStream: {
-            name: "Live",
-            type: "LiveStream",
-            target: interactive, // nuestro contenedor
-            constraints: {
-              deviceId: deviceId ? { exact: deviceId } : undefined,
-              facingMode: "environment",
-              // Puedes agregar más restricciones si es necesario
+    // Evento para cambiar la cámara seleccionada
+    selectCamera.addEventListener("change", () => {
+      if (scanning) {
+        detenerEscaneo();
+        iniciarEscaneo();
+      }
+    });
+
+    // Función para iniciar el escaneo
+    async function iniciarEscaneo() {
+      const selectedDeviceId = selectCamera.value;
+      if (!selectedDeviceId) {
+        alert("Por favor, selecciona una cámara antes de iniciar el escáner.");
+        return;
+      }
+
+      try {
+        camIndicator.textContent = "Iniciando cámara...";
+        // Iniciar QuaggaJS con la cámara seleccionada
+        Quagga.init(
+          {
+            inputStream: {
+              name: "Live",
+              type: "LiveStream",
+              target: interactive, // nuestro contenedor
+              constraints: {
+                deviceId: { exact: selectedDeviceId },
+                facingMode: "environment"
+              }
+            },
+            decoder: {
+              readers: ["code_128_reader", "ean_reader", "code_39_reader", "upc_reader"]
             }
           },
-          decoder: {
-            readers: ["code_128_reader", "ean_reader", "code_39_reader", "upc_reader"]
+          function(err) {
+            if (err) {
+              console.error(err);
+              alert("Error al iniciar el escáner: " + err);
+              detenerEscaneo();
+              return;
+            }
+            Quagga.start();
+            camIndicator.textContent = "Escaneando... Apunta la cámara al código de barras.";
+            console.log("Quagga inicializado correctamente");
           }
-        },
-        function(err) {
-          if (err) {
-            console.error(err);
-            alert("Error al iniciar el escáner: " + err);
-            detenerEscaneo();
-            return;
-          }
-          Quagga.start();
-          camIndicator.textContent = "Escaneando... Apunta la cámara al código de barras.";
-          console.log("Quagga inicializado correctamente");
-        }
-      );
+        );
 
-      // Evento: código detectado
-      Quagga.onDetected(onBarcodeDetected);
+        // Evento: código detectado
+        Quagga.onDetected(onBarcodeDetected);
+        scanning = true;
+        btnToggleScan.textContent = "Detener Escáner";
+        interactive.style.display = "block";
+      } catch (err) {
+        console.error("Error al iniciar el escáner: ", err);
+        camIndicator.textContent = "Error al iniciar el escáner.";
+      }
     }
 
-    /**
-     * Detiene el escaneo y reinicia el estado.
-     */
+    // Función para detener el escaneo
     function detenerEscaneo() {
-      scanning = false;
-      btnToggleScan.textContent = "Iniciar Escáner";
-      interactive.style.display = "none";
-      camIndicator.textContent = "";
-      Quagga.stop(); // detener escaneo
-      Quagga.offDetected(onBarcodeDetected); // quitar el evento
+      if (scanning) {
+        Quagga.stop(); // detener escaneo
+        Quagga.offDetected(onBarcodeDetected); // quitar el evento
+        scanning = false;
+        btnToggleScan.textContent = "Iniciar Escáner";
+        interactive.style.display = "none";
+        camIndicator.textContent = "";
+      }
     }
 
-    // ---------- CUANDO SE DETECTA UN CÓDIGO DE BARRAS ----------
+    // Función para manejar la detección de códigos de barras
     function onBarcodeDetected(data) {
       const code = data.codeResult.code;
       console.log("Código detectado: ", code);
@@ -389,7 +432,7 @@
       detenerEscaneo();
     }
 
-    // ---------- AGREGAR PRODUCTO A LA TABLA ----------
+    // Función para agregar producto a la tabla
     function agregarProducto() {
       const codigoIngresado = barcodeInput.value.trim();
       if (!codigoIngresado) return;
@@ -447,10 +490,8 @@
       barcodeInput.focus();
     }
 
-    btnAgregar.addEventListener("click", agregarProducto);
-
-    // Cobrar simplemente "resetea" la venta en esta demo
-    btnCobrar.addEventListener("click", () => {
+    // Función para manejar el cobro
+    function manejarCobro() {
       if (total === 0) {
         alert("No hay productos para cobrar.");
         return;
@@ -460,7 +501,19 @@
       tablaProductos.innerHTML = "";
       total = 0;
       totalPagar.textContent = "Total: $0.00";
+    }
+
+    // ---------- EVENTOS ----------
+    btnToggleScan.addEventListener("click", () => {
+      if (!scanning) {
+        iniciarEscaneo();
+      } else {
+        detenerEscaneo();
+      }
     });
+
+    btnAgregar.addEventListener("click", agregarProducto);
+    btnCobrar.addEventListener("click", manejarCobro);
 
     // Presionar Enter también agrega el producto
     barcodeInput.addEventListener("keypress", e => {
@@ -472,3 +525,4 @@
   </script>
 </body>
 </html>
+
