@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cajero - Los Canarios</title>
+
+  <!-- Google Fonts y estilos base similares al index -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --color-morado-oscuro: #4f46e5;
+      --color-morado-principal: #6528E0;
+      --color-morado-claro: #9d77f2;
+      --color-blanco: #fff;
+      --color-texto: #333;
+      --color-gris-fondo: #fafafa;
+      --color-sombra: rgba(0,0,0,0.1);
+      --transition-rapida: 0.3s ease-in-out;
+    }
+    * {
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--color-gris-fondo);
+      color: var(--color-texto);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(to right, var(--color-morado-oscuro), var(--color-morado-principal));
+      color: var(--color-blanco);
+      padding: 1rem;
+      box-shadow: 0 2px 6px var(--color-sombra);
+    }
+    header h1 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      flex: 1;
+    }
+    .card {
+      background: var(--color-blanco);
+      border-radius: 0.75rem;
+      box-shadow: 0 0 10px var(--color-sombra);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: transform var(--transition-rapida), box-shadow var(--transition-rapida);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px var(--color-sombra);
+    }
+    .card h2 {
+      color: var(--color-morado-principal);
+      margin-bottom: 1rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group label {
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+      color: var(--color-morado-oscuro);
+    }
+    .form-group input {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 0.3rem;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color var(--transition-rapida);
+    }
+    .form-group input:focus {
+      border-color: var(--color-morado-principal);
+    }
+    .btn {
+      background-color: var(--color-morado-principal);
+      color: var(--color-blanco);
+      padding: 0.7rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: background-color var(--transition-rapida);
+      border: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .btn:hover {
+      background-color: var(--color-morado-claro);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    table thead {
+      background-color: var(--color-morado-principal);
+      color: var(--color-blanco);
+    }
+    table th, table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    table th {
+      font-weight: 600;
+    }
+    .total {
+      text-align: right;
+      margin-top: 1rem;
+      font-weight: 700;
+      color: var(--color-morado-principal);
+    }
+    footer {
+      background: linear-gradient(to right, var(--color-morado-oscuro), var(--color-morado-principal));
+      color: var(--color-blanco);
+      text-align: center;
+      padding: 1rem;
+      box-shadow: 0 -2px 6px var(--color-sombra);
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 1rem;
+      text-decoration: underline;
+      color: var(--color-morado-principal);
+    }
+    /* Contenedor del escáner */
+    #interactive {
+      width: 100%;
+      max-width: 600px;
+      margin: 1rem auto;
+      position: relative;
+      border: 2px solid var(--color-morado-principal);
+      border-radius: 0.5rem;
+      overflow: hidden;
+      display: none; /* Asegurarse de que esté oculto inicialmente */
+    }
+    #interactive video {
+      width: 100%;
+    }
+    #cam-indicator {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--color-morado-oscuro);
+      font-weight: 500;
+    }
+    /* Indicador de éxito al agregar producto */
+    #success-message {
+      display: none;
+      color: green;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ENCABEZADO -->
+  <header>
+    <h1>Perfil Cajero - Los Canarios</h1>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="container">
+    <!-- Sección para escanear con la cámara -->
+    <div class="card">
+      <h2>Escáner de Código de Barras</h2>
+      <button class="btn" id="btn-toggle-scan">Iniciar Escáner</button>
+      <div id="cam-indicator"></div>
+      <div id="interactive"></div>
+    </div>
+
+    <!-- Form y tabla de productos -->
+    <div class="card">
+      <h2>Registro de Venta</h2>
+      <div class="form-group">
+        <label for="barcode">Código de barras:</label>
+        <input type="text" id="barcode" placeholder="Ingresa/escanea un código" readonly/>
+        <div id="success-message">¡Producto agregado exitosamente!</div>
+      </div>
+      <button class="btn" id="btn-agregar">Agregar Producto</button>
+
+      <!-- Tabla donde se muestran los productos agregados -->
+      <table id="tabla-productos">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Código</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Productos se irán agregando dinámicamente aquí -->
+        </tbody>
+      </table>
+
+      <div class="total" id="total-pagar">Total: $0.00</div>
+      <button class="btn" id="btn-cobrar">Cobrar</button>
+    </div>
+
+    <!-- Link para regresar a la página principal -->
+    <a href="index.html" class="back-link">&laquo; Regresar al Inicio</a>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <footer>
+    <p>Demostración de Cajero - Los Canarios &copy; 2025</p>
+  </footer>
+
+  <!-- 1) PRIMERO: Librería QuaggaJS (CDN) SIN atributo integrity -->
+  <script 
+    src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer">
+  </script>
+
+  <!-- 2) DESPUÉS: Tu script principal -->
+  <script>
+    // ---------- SIMULACIÓN DE BASE DE DATOS ----------
+    const productosDB = [
+      { codigo: "12345", nombre: "Manzana", precio: 10.00 },
+      { codigo: "67890", nombre: "Cereal", precio: 25.50 },
+      { codigo: "11121", nombre: "Leche",   precio: 18.00 },
+      { codigo: "55555", nombre: "Galletas", precio: 15.25 }
+      // Agrega más productos si deseas
+    ];
+
+    // ---------- VARIABLES GLOBALES ----------
+    let total = 0;
+    let scanning = false;
+
+    // ---------- REFERENCIAS A ELEMENTOS ----------
+    const btnToggleScan = document.getElementById("btn-toggle-scan");
+    const interactive = document.getElementById("interactive");
+    const camIndicator = document.getElementById("cam-indicator");
+    const barcodeInput = document.getElementById("barcode");
+    const btnAgregar = document.getElementById("btn-agregar");
+    const tablaProductos = document.getElementById("tabla-productos").querySelector("tbody");
+    const totalPagar = document.getElementById("total-pagar");
+    const btnCobrar = document.getElementById("btn-cobrar");
+    const successMessage = document.getElementById("success-message");
+
+    // ---------- FUNCIÓN PARA INICIAR O DETENER ESCANEO ----------
+    btnToggleScan.addEventListener("click", () => {
+      if (!scanning) {
+        iniciarEscaneo();
+      } else {
+        detenerEscaneo();
+      }
+    });
+
+    /**
+     * Inicia el proceso de escaneo seleccionando la cámara principal.
+     */
+    async function iniciarEscaneo() {
+      try {
+        camIndicator.textContent = "Solicitando acceso a la cámara...";
+        // Solicitar acceso a la cámara para poder enumerar dispositivos
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        // Enumerar dispositivos de video
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+        // Intentar seleccionar la cámara principal
+        let selectedDeviceId = null;
+
+        // Priorizar dispositivos con 'back' en el label
+        const backCameras = videoDevices.filter(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear'));
+        if (backCameras.length > 0) {
+          selectedDeviceId = backCameras[0].deviceId;
+        } else {
+          // Si no se encuentra, seleccionar el primer dispositivo de video
+          selectedDeviceId = videoDevices[0].deviceId;
+        }
+
+        if (!selectedDeviceId) {
+          throw new Error("No se encontró una cámara adecuada.");
+        }
+
+        // Detener el stream inicial ya que no lo usaremos directamente
+        stream.getTracks().forEach(track => track.stop());
+
+        // Iniciar QuaggaJS con la cámara seleccionada
+        iniciarQuagga(selectedDeviceId);
+      } catch (err) {
+        alert("No se pudo acceder a la cámara. Error: " + err.name + " - " + err.message);
+        camIndicator.textContent = "Acceso denegado o no disponible";
+      }
+    }
+
+    /**
+     * Inicializa QuaggaJS con la cámara específica.
+     * @param {string} deviceId - ID del dispositivo de video seleccionado.
+     */
+    function iniciarQuagga(deviceId) {
+      scanning = true;
+      btnToggleScan.textContent = "Detener Escáner";
+      interactive.style.display = "block";
+      camIndicator.textContent = "Iniciando cámara...";
+
+      Quagga.init(
+        {
+          inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: interactive, // nuestro contenedor
+            constraints: {
+              deviceId: deviceId ? { exact: deviceId } : undefined,
+              facingMode: "environment",
+              // Puedes agregar más restricciones si es necesario
+            }
+          },
+          decoder: {
+            readers: ["code_128_reader", "ean_reader", "code_39_reader", "upc_reader"]
+          }
+        },
+        function(err) {
+          if (err) {
+            console.error(err);
+            alert("Error al iniciar el escáner: " + err);
+            detenerEscaneo();
+            return;
+          }
+          Quagga.start();
+          camIndicator.textContent = "Escaneando... Apunta la cámara al código de barras.";
+          console.log("Quagga inicializado correctamente");
+        }
+      );
+
+      // Evento: código detectado
+      Quagga.onDetected(onBarcodeDetected);
+    }
+
+    /**
+     * Detiene el escaneo y reinicia el estado.
+     */
+    function detenerEscaneo() {
+      scanning = false;
+      btnToggleScan.textContent = "Iniciar Escáner";
+      interactive.style.display = "none";
+      camIndicator.textContent = "";
+      Quagga.stop(); // detener escaneo
+      Quagga.offDetected(onBarcodeDetected); // quitar el evento
+    }
+
+    // ---------- CUANDO SE DETECTA UN CÓDIGO DE BARRAS ----------
+    function onBarcodeDetected(data) {
+      const code = data.codeResult.code;
+      console.log("Código detectado: ", code);
+
+      // Rellenar input con el código detectado
+      barcodeInput.value = code;
+
+      // Mostrar mensaje de éxito
+      successMessage.style.display = "block";
+      setTimeout(() => {
+        successMessage.style.display = "none";
+      }, 2000);
+
+      // Detener el escáner para evitar múltiples detecciones
+      detenerEscaneo();
+    }
+
+    // ---------- AGREGAR PRODUCTO A LA TABLA ----------
+    function agregarProducto() {
+      const codigoIngresado = barcodeInput.value.trim();
+      if (!codigoIngresado) return;
+
+      // Buscar el producto en la "base de datos"
+      const productoEncontrado = productosDB.find(prod => prod.codigo === codigoIngresado);
+      if (!productoEncontrado) {
+        alert("Producto no encontrado. Intenta con otro código.");
+        barcodeInput.value = "";
+        barcodeInput.focus();
+        return;
+      }
+
+      // Verificar si el producto ya está en la tabla
+      const filas = tablaProductos.querySelectorAll("tr");
+      let filaExistente = null;
+      filas.forEach(fila => {
+        const codigoTd = fila.querySelector("td:nth-child(2)");
+        if (codigoTd && codigoTd.textContent === codigoIngresado) {
+          filaExistente = fila;
+        }
+      });
+
+      if (filaExistente) {
+        // Incrementar la cantidad y subtotal
+        let cantidad = parseInt(filaExistente.querySelector("td:nth-child(3)").textContent);
+        cantidad += 1;
+        filaExistente.querySelector("td:nth-child(3)").textContent = cantidad;
+
+        const precio = parseFloat(filaExistente.querySelector("td:nth-child(4)").textContent.replace('$', ''));
+        const nuevoSubtotal = precio * cantidad;
+        filaExistente.querySelector("td:nth-child(5)").textContent = `$${nuevoSubtotal.toFixed(2)}`;
+      } else {
+        // Agregar a la tabla
+        const cantidad = 1; // Se podría pedir al cajero ingresar cantidad
+        const subtotal = productoEncontrado.precio * cantidad;
+
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${productoEncontrado.nombre}</td>
+          <td>${productoEncontrado.codigo}</td>
+          <td>${cantidad}</td>
+          <td>$${productoEncontrado.precio.toFixed(2)}</td>
+          <td>$${subtotal.toFixed(2)}</td>
+        `;
+        tablaProductos.appendChild(fila);
+      }
+
+      // Actualizar total
+      total += productoEncontrado.precio;
+      totalPagar.textContent = `Total: $${total.toFixed(2)}`;
+
+      // Limpiar el campo de código
+      barcodeInput.value = "";
+      barcodeInput.focus();
+    }
+
+    btnAgregar.addEventListener("click", agregarProducto);
+
+    // Cobrar simplemente "resetea" la venta en esta demo
+    btnCobrar.addEventListener("click", () => {
+      if (total === 0) {
+        alert("No hay productos para cobrar.");
+        return;
+      }
+      alert(`Cobro exitoso. Total pagado: $${total.toFixed(2)}`);
+      // Limpiar venta
+      tablaProductos.innerHTML = "";
+      total = 0;
+      totalPagar.textContent = "Total: $0.00";
+    });
+
+    // Presionar Enter también agrega el producto
+    barcodeInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        agregarProducto();
+      }
+    });
+  </script>
+</body>
+</html>

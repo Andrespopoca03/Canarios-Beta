@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Los Canarios - Sistema de Ventas e Inventario</title>
+
+  <!-- Fuente de Google Fonts (ejemplo: Poppins) -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* VARIABLES DE COLOR */
+    :root {
+      --color-morado-oscuro: #4f46e5;
+      --color-morado-principal: #6528E0;
+      --color-morado-claro: #9d77f2;
+      --color-blanco: #fff;
+      --color-texto: #333;
+      --color-gris-fondo: #fafafa;
+      --color-sombra: rgba(0, 0, 0, 0.1);
+      --transition-rapida: 0.3s ease-in-out;
+    }
+
+    /* RESETEO BÁSICO */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: var(--color-texto);
+      background-color: var(--color-gris-fondo);
+      line-height: 1.5;
+      opacity: 0;
+      animation: fadeIn 1.2s forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    h1, h2, h3, h4 {
+      margin-bottom: 0.5rem;
+    }
+
+    /* CABECERA */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: linear-gradient(to right, var(--color-morado-oscuro), var(--color-morado-principal));
+      box-shadow: 0 2px 6px var(--color-sombra);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+    }
+
+    .logo h1 {
+      color: var(--color-blanco);
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .btn-aprovechar {
+      background-color: var(--color-morado-claro);
+      color: var(--color-blanco);
+      padding: 0.7rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: background-color var(--transition-rapida);
+    }
+
+    .btn-aprovechar:hover {
+      background-color: var(--color-blanco);
+      color: var(--color-morado-oscuro);
+    }
+
+    /* SECCIÓN PRINCIPAL (HERO) */
+    .hero {
+      background: linear-gradient(120deg, var(--color-morado-principal), var(--color-morado-oscuro));
+      color: var(--color-blanco);
+      padding: 4rem 1rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -15%;
+      width: 130%;
+      height: 130%;
+      background: radial-gradient(rgba(255,255,255,0.2), transparent 70%);
+      transform: rotate(-25deg);
+      opacity: 0.3;
+    }
+
+    .hero h2 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .hero p {
+      font-size: 1rem;
+      max-width: 800px;
+      margin: 0.5rem auto 1.5rem;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .btn-hero {
+      background-color: var(--color-blanco);
+      color: var(--color-morado-oscuro);
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      transition: background-color var(--transition-rapida);
+    }
+
+    .btn-hero:hover {
+      background-color: #efefef;
+      color: var(--color-morado-oscuro);
+    }
+
+    /* SECCIONES DE CONTENIDO */
+    .section-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--color-morado-oscuro);
+      font-weight: 700;
+      font-size: 1.8rem;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: "";
+      display: block;
+      width: 80px;
+      height: 3px;
+      background-color: var(--color-morado-oscuro);
+      margin: 0.5rem auto 0;
+      border-radius: 2px;
+    }
+
+    .content-block {
+      background-color: var(--color-blanco);
+      border-radius: 0.75rem;
+      box-shadow: 0 0 10px var(--color-sombra);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: transform var(--transition-rapida), box-shadow var(--transition-rapida);
+    }
+
+    .content-block:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px var(--color-sombra);
+    }
+
+    .content-block h3 {
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: var(--color-morado-principal);
+    }
+
+    .content-block p {
+      margin-bottom: 1rem;
+      text-align: justify;
+      font-weight: 300;
+    }
+
+    .subsection-title {
+      color: var(--color-morado-oscuro);
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .phase-list {
+      margin-left: 1rem;
+      margin-top: 0.5rem;
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .phase-list li {
+      margin-bottom: 0.75rem;
+      position: relative;
+      padding-left: 1.5rem;
+      font-weight: 300;
+    }
+
+    .phase-list li::before {
+      content: "•";
+      color: var(--color-morado-principal);
+      position: absolute;
+      left: 0;
+    }
+
+    /* PIE DE PÁGINA */
+    footer {
+      background: linear-gradient(to right, var(--color-morado-oscuro), var(--color-morado-principal));
+      color: var(--color-blanco);
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+      box-shadow: 0 -2px 6px var(--color-sombra);
+    }
+
+    footer p {
+      font-weight: 300;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABECERA -->
+  <header>
+    <div class="nav-container">
+      <div class="logo">
+        <h1>Los Canarios</h1>
+      </div>
+      <a href="#" class="btn-aprovechar">Iniciar Sesión</a>
+    </div>
+  </header>
+
+  <!-- SECCIÓN PRINCIPAL (HERO) -->
+  <section class="hero">
+    <h2>Sistema de Ventas e Inventario Personalizado</h2>
+    <h1>Los Canarios</h1>
+    <p>
+      En el dinámico entorno actual de los supermercados, es crucial contar con herramientas de gestión 
+      que optimicen las operaciones diarias y ofrezcan un control efectivo de ventas, inventarios y personal. 
+      Los Canarios, al operar de manera manual en áreas clave, enfrenta errores humanos y falta de información 
+      en tiempo real, limitando la toma de decisiones y afectando la rentabilidad.
+    </p>
+    <p>
+      La solución propuesta integra todas las operaciones en una plataforma web accesible desde cualquier dispositivo, 
+      permitiendo mayor eficiencia, reducción de costos y una mejor experiencia para el cliente.
+    </p>
+    <a href="#funciona" class="btn-hero">Ver más</a>
+  </section>
+
+  <!-- SECCIÓN: CÓMO FUNCIONA EL SISTEMA -->
+  <section id="funciona" class="section-container">
+    <h2 class="section-title">¿Cómo Funciona el Sistema?</h2>
+
+    <div class="content-block">
+      <p>
+        El sistema está estructurado en tres perfiles de usuarios principales: <strong>Administrador</strong>, 
+        <strong>Empleado</strong> y <strong>Cliente</strong>. Cada perfil tiene niveles de acceso y funcionalidades 
+        específicas, diseñadas para optimizar las tareas y facilitar el trabajo en cada área del supermercado.
+      </p>
+    </div>
+
+    <!-- PERFIL ADMINISTRADOR -->
+    <div class="content-block">
+      <h3>1. Perfil de Administrador</h3>
+      <p>
+        El Administrador tiene acceso completo a todas las funcionalidades, siendo crucial para 
+        mantener un control detallado de las operaciones. Sus capacidades incluyen:
+      </p>
+      <ul class="phase-list">
+        <li><strong>Visualización de Ventas:</strong> Accede a resúmenes detallados y análisis de ventas.  
+        </li>
+        <li><strong>Gestión de Inventarios:</strong> Información en tiempo real y posibilidad de intercambios entre sucursales.</li>
+        <li><strong>Generación de Reportes:</strong> Reportes personalizables en distintos formatos.</li>
+        <li><strong>Gestión de Empleados:</strong> Asignación de horarios, permisos, seguimiento de pagos y desempeño.</li>
+        <li><strong>Contratación y Bajas:</strong> Dar de alta o baja a empleados con notas de desempeño.</li>
+        <li><strong>Monitoreo de Tiempo:</strong> Registro detallado de horas trabajadas por empleado.</li>
+      </ul>
+    </div>
+
+    <!-- PERFIL EMPLEADO -->
+    <div class="content-block">
+      <h3>2. Perfil de Empleado</h3>
+      <p>
+        Los empleados se dividen en diferentes roles, con accesos ajustados a sus funciones.
+      </p>
+      <p class="subsection-title">Empleado Tipo A (Gerente de Tienda)</p>
+      <p>
+        Acceso a ventas e inventarios de su tienda, solicitud de intercambios y generación de reportes diarios. 
+        Coordina personal y gestiona el inventario local.
+      </p>
+
+      <!-- CAMBIO: Link al Cajero (Empleado Tipo B) -->
+      <p class="subsection-title">Empleado Tipo B (<a href="cajero.html">Cajero</a>)</p> 
+      <!-- ↑↑↑ Se agregó el hipervínculo que lleva a la página de demostración "cajero.html" -->
+
+      <p>
+        Registra ventas, escanea productos, genera carritos de compra y administra pagos. 
+        <strong>Haz clic en el enlace</strong> para ver la <strong>página de demostración</strong> de este perfil.
+      </p>
+
+      <p class="subsection-title">Empleado Tipo C (Empleado Común)</p>
+      <p>
+        Visualiza inventarios y realiza tareas generales de organización y atención al cliente.
+      </p>
+    </div>
+
+    <!-- PERFIL CLIENTE -->
+    <div class="content-block">
+      <h3>3. Perfil de Cliente</h3>
+      <p>
+        Facilita la compra en línea y en tienda, ofreciendo:
+      </p>
+      <ul class="phase-list">
+        <li><strong>Visualización de Productos:</strong> Precios y disponibilidad en tiempo real.</li>
+        <li><strong>Carrito de Compras:</strong> Agrega productos y paga cuando lo desees.</li>
+        <li><strong>Realización de Pedidos:</strong> Opción de recoger en tienda o recibir a domicilio.</li>
+        <li><strong>Historial de Compras:</strong> Seguimiento de pedidos y compras anteriores.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: IMPLEMENTACIÓN DEL SISTEMA -->
+  <section class="section-container">
+    <h2 class="section-title">Implementación del Sistema</h2>
+
+    <div class="content-block">
+      <p>
+        Para garantizar una transición fluida, la implementación se desarrolla en fases:
+      </p>
+      <p class="subsection-title">Fase 1: Desarrollo y Diseño</p>
+      <ul class="phase-list">
+        <li><strong>Base de Datos:</strong> Robusta y segura para ventas, inventarios, empleados y clientes.</li>
+        <li><strong>Interfaz de Usuario:</strong> Adaptada a diferentes dispositivos, intuitiva y funcional.</li>
+        <li><strong>Personalización:</strong> Se adapta a las necesidades específicas de Los Canarios.</li>
+      </ul>
+
+      <p class="subsection-title">Fase 2: Implementación</p>
+      <ul class="phase-list">
+        <li><strong>Servidor y Dominio:</strong> Alojado en HostGator para alta disponibilidad.</li>
+        <li><strong>Carga de Datos:</strong> Importación de inventarios y empleados actuales.</li>
+      </ul>
+
+      <p class="subsection-title">Fase 3: Capacitación</p>
+      <ul class="phase-list">
+        <li><strong>Capacitación del Personal:</strong> Formación práctica y manuales de uso efectivo.</li>
+      </ul>
+
+      <p class="subsection-title">Fase 4: Monitoreo y Ajustes Iniciales</p>
+      <ul class="phase-list">
+        <li><strong>Monitoreo:</strong> Retroalimentación continua y ajustes inmediatos según necesidades.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: CONCLUSIÓN -->
+  <section class="section-container">
+    <h2 class="section-title">Conclusión</h2>
+    <div class="content-block">
+      <p>
+        El sistema de Ventas e Inventario Personalizado para Los Canarios optimiza todas 
+        las áreas críticas del supermercado, con acceso desde cualquier dispositivo y un control 
+        exhaustivo en tiempo real. Esto reduce errores, mejora la eficiencia y la experiencia del cliente.
+      </p>
+      <p>
+        La implementación brindará beneficios como reducción de costos, mejor servicio al cliente 
+        y mayor competitividad en el mercado. Con HostGator, se garantiza la seguridad y fiabilidad del sistema.
+      </p>
+      <p><strong>Cotización Final:</strong> $12,000 MXN (Costo único, acceso desde múltiples dispositivos)</p>
+    </div>
+  </section>
+
+  <!-- PIE DE PÁGINA -->
+  <footer>
+    <p>Sistema de Ventas e Inventario - Los Canarios &copy; 2025</p>
+  </footer>
+
+</body>
+</html>
